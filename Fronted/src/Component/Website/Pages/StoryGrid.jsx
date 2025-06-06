@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { fetchStories } from "../../../Features/storySlice";
 
 const StoryGrid = () => {
-  const API_BASE = import.meta.env.VITE_API_URL;
+ 
   const dispatch = useDispatch();
 
   // ✅ Corrected slice key to "story" (not "stories")
@@ -31,7 +31,7 @@ const StoryGrid = () => {
     <section className="p-4 md:p-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
       {visibleStories.map((story) => {
         const fileExtension = story?.filename?.split(".").pop().toLowerCase();
-        const mediaUrl = `${API_BASE}/uploads/${story.filename}`;
+        const mediaUrl = `https://new-uae-git-main-vijendarkumars-projects.vercel.app/uploads/${story.filename}`;
 
         return (
           <div
