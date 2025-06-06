@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchStories, deleteStory } from "../../Features/storySlice";
+import { deleteStory, fetchStories } from "../../Features/storySlice";
+
 
 const StoryTable = () => {
   const dispatch = useDispatch();

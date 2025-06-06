@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import Swal from "sweetalert2";
 import { useDispatch, useSelector } from "react-redux";
-import { resetState, submitStory } from "../../Features/storySlice";
+import { submitStory } from "../../Features/storySlice";
+
 
 const StoryInsert = () => {
   const dispatch = useDispatch();

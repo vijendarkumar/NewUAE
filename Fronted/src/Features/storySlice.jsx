@@ -2,14 +2,14 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 const API_BASE = import.meta.env.VITE_API_URL;
 
-// ✅ FIXED: Correct thunk name from `story` to `submitStory`
+// ✅ Submit Story Thunk
 export const submitStory = createAsyncThunk(
   "story/submitStory",
   async (formData, { rejectWithValue }) => {
     try {
       const res = await fetch(`${API_BASE}/api/story`, {
         method: "POST",
-        body: formData, // ✅ FIXED: Use actual formData, no need for Content-Type with FormData
+        body: formData, // no need for Content-Type when using FormData
       });
 
       if (!res.ok) throw new Error("Network response was not ok");
@@ -32,6 +32,22 @@ export const fetchStories = createAsyncThunk(
       return await res.json();
     } catch (error) {
       return rejectWithValue(error.message || "Failed to load stories");
+    }
+  }
+);
+
+// ✅ Delete Story Thunk
+export const deleteStory = createAsyncThunk(
+  "story/deleteStory",
+  async (id, { rejectWithValue }) => {
+    try {
+      const res = await fetch(`${API_BASE}/api/story/${id}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Failed to delete story");
+      return id; // Return ID to remove from state
+    } catch (error) {
+      return rejectWithValue(error.message || "Delete failed");
     }
   }
 );
@@ -72,6 +88,16 @@ const storySlice = createSlice({
       })
       .addCase(fetchStories.rejected, (state, action) => {
         state.loading = false;
+        state.error = action.payload;
+      })
+
+      // ✅ Handle delete story
+      .addCase(deleteStory.fulfilled, (state, action) => {
+        state.stories = state.stories.filter(
+          (story) => story._id !== action.payload
+        );
+      })
+      .addCase(deleteStory.rejected, (state, action) => {
         state.error = action.payload;
       });
   },
