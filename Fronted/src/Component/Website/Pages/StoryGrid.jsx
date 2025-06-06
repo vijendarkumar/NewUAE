@@ -31,7 +31,7 @@ const StoryGrid = () => {
     <section className="p-4 md:p-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
       {visibleStories.map((story) => {
         const fileExtension = story?.filename?.split(".").pop().toLowerCase();
-        const mediaUrl = `https://new-uae-git-main-vijendarkumars-projects.vercel.app/uploads/${story.filename}`;
+        const mediaUrl = `${API_BASE}/uploads/${story.filename}`;
 
         return (
           <div
@@ -40,7 +40,7 @@ const StoryGrid = () => {
           >
             {["jpg", "jpeg", "png", "gif"].includes(fileExtension) && (
               <img
-                src={mediaUrl}
+                src={story.mediaUrl}
                 alt={story.title}
                 className="w-full h-40 object-cover"
               />
