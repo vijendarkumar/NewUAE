@@ -5,7 +5,8 @@ import { userstoryshow } from "../../Features/UserSlice";
 const HomePage = () => {
   const dispatch = useDispatch();
   const { stories, loading, error } = useSelector((state) => state.stories); // ✅ Make sure "story" is the correct key from your store
-
+  const { users } = useSelector((state) => state.app);
+  const { tickets } = useSelector((state) => state.raffle);
   const [page, setPage] = useState(1);
   const perPage = 10;
 
@@ -25,7 +26,7 @@ const HomePage = () => {
         </div>
         <div className="bg-green-500 text-white p-4 rounded-xl shadow">
           <h1>Submit Story</h1>
-          <p>{stories.length} Users Submitted</p>
+          <p>{users.length} Users Submitted</p>
         </div>
         <div className="bg-yellow-500 text-white p-4 rounded-xl shadow">
           <h1>Payment Story</h1>
@@ -33,7 +34,7 @@ const HomePage = () => {
         </div>
         <div className="bg-purple-500 text-white p-4 rounded-xl shadow">
           <h1>Join Refer</h1>
-          <p>61 Users</p>
+          <p>{tickets.length} Users Submitted</p>
         </div>
       </section>
 
