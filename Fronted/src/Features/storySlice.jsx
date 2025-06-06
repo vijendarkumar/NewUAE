@@ -1,97 +1,80 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchStories } from "../../../Features/storySlice";
-import { Link } from "react-router-dom";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
-const StoryGrid = () => {
-  const API_BASE = import.meta.env.VITE_API_URL; // Add this line
-  const dispatch = useDispatch();
-  const { stories, loading, error } = useSelector((state) => state.stories);
+const API_BASE = import.meta.env.VITE_API_URL;
 
-  // State to control how many stories to show
-  const [visibleCount, setVisibleCount] = useState(6);
+// ✅ FIXED: Correct thunk name from `story` to `submitStory`
+export const submitStory = createAsyncThunk(
+  "story/submitStory",
+  async (formData, { rejectWithValue }) => {
+    try {
+      const res = await fetch(`${API_BASE}/api/story`, {
+        method: "POST",
+        body: formData, // ✅ FIXED: Use actual formData, no need for Content-Type with FormData
+      });
 
-  useEffect(() => {
-    dispatch(fetchStories());
-  }, [dispatch]);
+      if (!res.ok) throw new Error("Network response was not ok");
 
-  if (loading) return <p>Loading stories...</p>;
-  if (error) return <p className="text-red-600">Error: {error}</p>;
-  if (stories.length === 0) return <p>No stories available.</p>;
+      const result = await res.json();
+      return result;
+    } catch (error) {
+      return rejectWithValue(error.message || "Something went wrong");
+    }
+  }
+);
 
-  // Slice stories to visible count
-  const visibleStories = stories.slice(0, visibleCount);
+// ✅ Fetch Stories Thunk
+export const fetchStories = createAsyncThunk(
+  "story/fetchStories",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await fetch(`${API_BASE}/api/story`);
+      if (!res.ok) throw new Error("Failed to fetch stories");
+      return await res.json();
+    } catch (error) {
+      return rejectWithValue(error.message || "Failed to load stories");
+    }
+  }
+);
 
-  // Handler to load more stories
-  const handleLoadMore = () => {
-    setVisibleCount((prev) => prev + 6);
-  };
+// ✅ Slice
+const storySlice = createSlice({
+  name: "story",
+  initialState: {
+    stories: [],
+    loading: false,
+    error: null,
+  },
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      // Submit story
+      .addCase(submitStory.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(submitStory.fulfilled, (state, action) => {
+        state.loading = false;
+        state.stories.push(action.payload);
+      })
+      .addCase(submitStory.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
 
-  return (
-    <section className="p-4 md:p-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-      {visibleStories.map((story) => {
-        const fileExtension = story.filename.split(".").pop().toLowerCase();
+      // Fetch stories
+      .addCase(fetchStories.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchStories.fulfilled, (state, action) => {
+        state.loading = false;
+        state.stories = action.payload;
+      })
+      .addCase(fetchStories.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+  },
+});
 
-        return (
-          <div
-            key={story._id}
-            className="group bg-white border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition duration-300"
-          >
-            {["jpg", "jpeg", "png", "gif"].includes(fileExtension) && (
-              <img
-                src={`${API_BASE}/uploads/${story.filename}`} // Use API_BASE here
-                alt={story.title}
-                className="w-full h-40 object-cover"
-              />
-            )}
-
-            {["mp3", "wav", "ogg"].includes(fileExtension) && (
-              <audio controls className="w-full">
-                <source
-                  src={`${API_BASE}/uploads/${story.filename}`} // Use API_BASE here
-                  type={`audio/${fileExtension}`}
-                />
-                Your browser does not support the audio element.
-              </audio>
-            )}
-
-            {["mp4", "webm", "ogg"].includes(fileExtension) && (
-              <video controls className="w-full h-40 object-cover">
-                <source
-                  src={`${API_BASE}/uploads/${story.filename}`} // Use API_BASE here
-                  type={`video/${fileExtension}`}
-                />
-                Your browser does not support the video tag.
-              </video>
-            )}
-
-            <div className="p-4">
-              <h3 className="font-semibold text-lg">{story.title}</h3>
-              <p className="text-sm text-gray-600 mt-1 line-clamp-5">{story.snippet}</p>
-              <Link
-                to="/"
-                className="inline-block text-blue-600 mt-2 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-              >
-                Read More →
-              </Link>
-            </div>
-          </div>
-        );
-      })}
-
-      {/* Show Load More only if there are more stories to show */}
-      {visibleCount < stories.length && (
-        <div className="col-span-full text-center mt-6">
-          <button
-            onClick={handleLoadMore}
-            className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-          >
-            Load More
-          </button>
-        </div>
-      )}
-    </section>
-  );
-};
-
-export default StoryGrid;
+export default storySlice.reducer;

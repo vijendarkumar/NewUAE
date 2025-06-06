@@ -4,11 +4,12 @@ import { fetchStories } from "../../../Features/storySlice";
 import { Link } from "react-router-dom";
 
 const StoryGrid = () => {
-  const API_BASE = import.meta.env.VITE_API_URL; 
+  const API_BASE = import.meta.env.VITE_API_URL;
   const dispatch = useDispatch();
-  const { stories, loading, error } = useSelector((state) => state.stories);
 
-  // State to control how many stories to show
+  // ✅ Corrected slice key to "story" (not "stories")
+  const { stories, loading, error } = useSelector((state) => state.story);
+
   const [visibleCount, setVisibleCount] = useState(6);
 
   useEffect(() => {
@@ -19,10 +20,8 @@ const StoryGrid = () => {
   if (error) return <p className="text-red-600">Error: {error}</p>;
   if (stories.length === 0) return <p>No stories available.</p>;
 
-  // Slice stories to visible count
   const visibleStories = stories.slice(0, visibleCount);
 
-  // Handler to load more stories
   const handleLoadMore = () => {
     setVisibleCount((prev) => prev + 6);
   };
@@ -30,7 +29,8 @@ const StoryGrid = () => {
   return (
     <section className="p-4 md:p-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
       {visibleStories.map((story) => {
-        const fileExtension = story.filename.split(".").pop().toLowerCase();
+        const fileExtension = story?.filename?.split(".").pop().toLowerCase();
+        const mediaUrl = `${API_BASE}/uploads/${story.filename}`;
 
         return (
           <div
@@ -39,35 +39,31 @@ const StoryGrid = () => {
           >
             {["jpg", "jpeg", "png", "gif"].includes(fileExtension) && (
               <img
-                src={`${API_BASE}/uploads/${story.filename}`}
+                src={mediaUrl}
                 alt={story.title}
                 className="w-full h-40 object-cover"
               />
             )}
 
-            {["mp3", "wav", "ogg"].includes(fileExtension) && (
+            {["mp3", "wav"].includes(fileExtension) && (
               <audio controls className="w-full">
-                <source
-                  src={`http://localhost:3000/uploads/${story.filename}`}
-                  type={`audio/${fileExtension}`}
-                />
+                <source src={mediaUrl} type={`audio/${fileExtension}`} />
                 Your browser does not support the audio element.
               </audio>
             )}
 
             {["mp4", "webm", "ogg"].includes(fileExtension) && (
               <video controls className="w-full h-40 object-cover">
-                <source
-                  src={`http://localhost:3000/uploads/${story.filename}`}
-                  type={`video/${fileExtension}`}
-                />
+                <source src={mediaUrl} type={`video/${fileExtension}`} />
                 Your browser does not support the video tag.
               </video>
             )}
 
             <div className="p-4">
               <h3 className="font-semibold text-lg">{story.title}</h3>
-              <p className="text-sm text-gray-600 mt-1 line-clamp-5">{story.snippet}</p>
+              <p className="text-sm text-gray-600 mt-1 line-clamp-5">
+                {story.snippet}
+              </p>
               <Link
                 to="/"
                 className="inline-block text-blue-600 mt-2 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300"
@@ -79,7 +75,6 @@ const StoryGrid = () => {
         );
       })}
 
-      {/* Show Load More only if there are more stories to show */}
       {visibleCount < stories.length && (
         <div className="col-span-full text-center mt-6">
           <button
