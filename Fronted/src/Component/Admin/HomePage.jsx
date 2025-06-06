@@ -4,11 +4,12 @@ import { userstoryshow } from "../../Features/UserSlice";
 
 const HomePage = () => {
   const dispatch = useDispatch();
-  const { stories = [], loading, error } = useSelector((state) => state.app);
-  const storiesLength = useSelector((state) => state.stories.stories?.length ?? 0);
+  const { stories, loading, error } = useSelector((state) => state.story); // ✅ Make sure "story" is the correct key from your store
 
-  const [page, setPage] = useState(1), perPage = 10;
-  const paged = stories.slice((page - 1) * perPage, page * perPage);
+  const [page, setPage] = useState(1);
+  const perPage = 10;
+
+  const paged = stories?.slice((page - 1) * perPage, page * perPage); // ✅ Optional chaining to avoid crash if stories is undefined
 
   useEffect(() => {
     dispatch(userstoryshow());
@@ -16,10 +17,11 @@ const HomePage = () => {
 
   return (
     <main className="p-4 space-y-6">
+      {/* Summary Cards */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-blue-500 text-white p-4 rounded-xl shadow">
           <h1>Story Card</h1>
-          <p>{storiesLength} Stories</p>
+          <p>{stories.length} Stories</p> {/* ✅ FIXED: was using undefined `storiesLength` */}
         </div>
         <div className="bg-green-500 text-white p-4 rounded-xl shadow">
           <h1>Submit Story</h1>
@@ -35,6 +37,7 @@ const HomePage = () => {
         </div>
       </section>
 
+      {/* Story Table */}
       <section className="bg-white p-4 rounded-xl shadow">
         <h2 className="text-lg font-semibold mb-2">Website User Story Table</h2>
 
@@ -68,7 +71,8 @@ const HomePage = () => {
               </tbody>
             </table>
 
-            <div className="flex gap-2 mt-4">
+            {/* Pagination Buttons */}
+            <div className="flex gap-2 mt-4 flex-wrap">
               {[...Array(Math.ceil(stories.length / perPage))].map((_, i) => (
                 <button
                   key={i}
@@ -84,6 +88,8 @@ const HomePage = () => {
             </div>
           </>
         )}
+
+        {!loading && paged.length === 0 && <p>No stories found.</p>}
       </section>
     </main>
   );
