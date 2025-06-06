@@ -9,7 +9,7 @@ const StoryGrid = () => {
   const dispatch = useDispatch();
 
   // ✅ Corrected slice key to "story" (not "stories")
-  const { stories, loading, error } = useSelector((state) => state.story);
+  const { stories, loading, error } = useSelector((state) => state.stories);
 
   const [visibleCount, setVisibleCount] = useState(6);
 

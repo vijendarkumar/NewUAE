@@ -4,7 +4,7 @@ import { userstoryshow } from "../../Features/UserSlice";
 
 const HomePage = () => {
   const dispatch = useDispatch();
-  const { stories, loading, error } = useSelector((state) => state.story); // ✅ Make sure "story" is the correct key from your store
+  const { stories, loading, error } = useSelector((state) => state.stories); // ✅ Make sure "story" is the correct key from your store
 
   const [page, setPage] = useState(1);
   const perPage = 10;
