@@ -4,8 +4,12 @@ const db = require("./db");
 require("dotenv").config();
 const path = require("path");
 const cors = require("cors");
+import { fileURLToPath } from "url"; // only if using ES modules
 
-// Serve static files
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// ✅ Serve static files from the "uploads" folder
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // CORS options
