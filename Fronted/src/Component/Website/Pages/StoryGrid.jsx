@@ -1,48 +1,48 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-
-import { Link } from "react-router-dom";
 import { fetchStories } from "../../../Features/storySlice";
+import { Link } from "react-router-dom";
 
 const StoryGrid = () => {
- 
   const dispatch = useDispatch();
-
-  // ✅ Corrected slice key to "story" (not "stories")
   const { stories, loading, error } = useSelector((state) => state.stories);
-
   const [visibleCount, setVisibleCount] = useState(6);
 
   useEffect(() => {
     dispatch(fetchStories());
   }, [dispatch]);
 
+  const handleLoadMore = () => setVisibleCount((prev) => prev + 6);
+
   if (loading) return <p>Loading stories...</p>;
   if (error) return <p className="text-red-600">Error: {error}</p>;
-  if (stories.length === 0) return <p>No stories available.</p>;
+  if (!stories || stories.length === 0) return <p>No stories available.</p>;
 
   const visibleStories = stories.slice(0, visibleCount);
-
-  const handleLoadMore = () => {
-    setVisibleCount((prev) => prev + 6);
-  };
 
   return (
     <section className="p-4 md:p-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
       {visibleStories.map((story) => {
+        const fileExtension = story?.filename?.split(".").pop().toLowerCase();
+        const mediaUrl =
+          story.mediaUrl ||
+          `https://new-uae-git-main-vijendarkumars-projects.vercel.app/uploads/${story.filename}`;
+
         return (
           <div
             key={story._id}
             className="group bg-white border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition duration-300"
           >
+            {/* Image */}
             {["jpg", "jpeg", "png", "gif"].includes(fileExtension) && (
               <img
-                src={`https://new-uae-git-main-vijendarkumars-projects.vercel.app/uploads/${story.filename}`}
+                src={mediaUrl}
                 alt={story.title}
                 className="w-full h-40 object-cover"
               />
             )}
 
+            {/* Audio */}
             {["mp3", "wav"].includes(fileExtension) && (
               <audio controls className="w-full">
                 <source src={mediaUrl} type={`audio/${fileExtension}`} />
@@ -50,12 +50,18 @@ const StoryGrid = () => {
               </audio>
             )}
 
+            {/* Video */}
             {["mp4", "webm", "ogg"].includes(fileExtension) && (
               <video controls className="w-full h-40 object-cover">
                 <source src={mediaUrl} type={`video/${fileExtension}`} />
                 Your browser does not support the video tag.
               </video>
             )}
+
+            {/* Fallback if file type is unknown */}
+            {!["jpg", "jpeg", "png", "gif", "mp3", "wav", "mp4", "webm", "ogg"].includes(
+              fileExtension
+            ) && <p className="p-4 text-sm text-gray-500">Unsupported media type</p>}
 
             <div className="p-4">
               <h3 className="font-semibold text-lg">{story.title}</h3>
