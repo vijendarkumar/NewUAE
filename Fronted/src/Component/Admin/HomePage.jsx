@@ -34,7 +34,7 @@ const HomePage = () => {
         </div>
         <div className="bg-purple-500 text-white p-4 rounded-xl shadow">
           <h1>Join Refer</h1>
-          <p>{tickets.length} Users Submitted</p>
+          <p>{tickets} Users Submitted</p>
         </div>
       </section>
 

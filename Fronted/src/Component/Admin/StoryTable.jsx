@@ -4,6 +4,7 @@ import { deleteStory, fetchStories } from "../../Features/storySlice";
 
 
 const StoryTable = () => {
+  const API_BASE = import.meta.env.VITE_API_URL;
   const dispatch = useDispatch();
   const { stories, loading, error } = useSelector((state) => state.stories);
   const [page, setPage] = useState(1);
@@ -57,7 +58,7 @@ const StoryTable = () => {
                   <td className="p-2">
                     {s.type === "image" ? (
                       <img
-                        src={`http://localhost:3000/uploads/${s.filename}`}
+                        src={`${API_BASE}/uploads/${s.filename}`}
                         alt={s.title}
                         className="w-16 h-10 object-cover"
                       />
