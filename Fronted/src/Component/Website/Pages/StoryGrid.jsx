@@ -4,6 +4,7 @@ import { fetchStories } from "../../../Features/storySlice";
 import { Link } from "react-router-dom";
 
 const StoryGrid = () => {
+  const API_BASE = import.meta.env.VITE_API_URL; 
   const dispatch = useDispatch();
   const { stories, loading, error } = useSelector((state) => state.stories);
 
@@ -38,7 +39,7 @@ const StoryGrid = () => {
           >
             {["jpg", "jpeg", "png", "gif"].includes(fileExtension) && (
               <img
-                src={`http://localhost:3000/uploads/${story.filename}`}
+                src={`${API_BASE}/uploads/${story.filename}`}
                 alt={story.title}
                 className="w-full h-40 object-cover"
               />
