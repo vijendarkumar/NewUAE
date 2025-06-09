@@ -28,7 +28,6 @@ const StoryGrid = () => {
         const mediaUrl =
           story.mediaUrl ||
           `${API_BASE}/uploads/${story.filename}`;
-
         return (
           <div
             key={story._id}
@@ -37,7 +36,7 @@ const StoryGrid = () => {
             {/* Image */}
             {["jpg", "jpeg", "png", "gif"].includes(fileExtension) && (
               <img
-                src={mediaUrl}
+                src={story.filename}
                 alt={story.title}
                 className="w-full h-40 object-cover"
               />
