@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchStories } from "../../../Features/storySlice";
+
 import { Link } from "react-router-dom";
+import { fetchStories } from "../../../Features/storySlice";
 
 const StoryGrid = () => {
-  const API_BASE = import.meta.env.VITE_API_URL;
   const dispatch = useDispatch();
   const { stories, loading, error } = useSelector((state) => state.stories);
   const [visibleCount, setVisibleCount] = useState(6);
@@ -25,9 +25,10 @@ const StoryGrid = () => {
     <section className="p-4 md:p-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
       {visibleStories.map((story) => {
         const fileExtension = story?.filename?.split(".").pop().toLowerCase();
-        const mediaUrl =
-          story.mediaUrl ||
-          `${API_BASE}/uploads/${story.filename}`;
+
+        // Use Cloudinary URL saved in backend - example: story.path or story.mediaUrl
+        const mediaUrl = story.path || story.mediaUrl;
+
         return (
           <div
             key={story._id}
@@ -36,7 +37,7 @@ const StoryGrid = () => {
             {/* Image */}
             {["jpg", "jpeg", "png", "gif"].includes(fileExtension) && (
               <img
-                src={story.filename}
+                src={mediaUrl}
                 alt={story.title}
                 className="w-full h-40 object-cover"
               />
