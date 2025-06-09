@@ -27,7 +27,7 @@ const StoryGrid = () => {
       {visibleStories.map((story) => {
         const fileExtension = story?.filename?.split(".").pop().toLowerCase();
         // Use Cloudinary URL saved in backend - example: story.path or story.mediaUrl
-        const mediaUrl = story.path ? story.path : `${API_BASE}/uploads/${story.filename}`;
+        const mediaUrl = `${API_BASE}/uploads/${story.path}`;
 
         return (
           <div
