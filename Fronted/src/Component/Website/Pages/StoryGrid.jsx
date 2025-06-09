@@ -7,6 +7,7 @@ const StoryGrid = () => {
   const dispatch = useDispatch();
   const { stories, loading, error } = useSelector((state) => state.stories);
   const [visibleCount, setVisibleCount] = useState(6);
+  const API_BASE = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     dispatch(fetchStories());
@@ -24,16 +25,14 @@ const StoryGrid = () => {
     <section className="p-4 md:p-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
       {visibleStories.map((story) => {
         const fileExtension = story?.filename?.split(".").pop().toLowerCase();
-        const mediaUrl =
-          story.mediaUrl ||
-          `https://new-uae-git-main-vijendarkumars-projects.vercel.app/uploads/${story.filename}`;
+        const mediaUrl = `${API_BASE}/uploads/${story.filename}`;
 
         return (
           <div
             key={story._id}
             className="group bg-white border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition duration-300"
           >
-            {/* Image */}
+            {/* Media Preview */}
             {["jpg", "jpeg", "png", "gif"].includes(fileExtension) && (
               <img
                 src={mediaUrl}
@@ -42,7 +41,6 @@ const StoryGrid = () => {
               />
             )}
 
-            {/* Audio */}
             {["mp3", "wav"].includes(fileExtension) && (
               <audio controls className="w-full">
                 <source src={mediaUrl} type={`audio/${fileExtension}`} />
@@ -50,7 +48,6 @@ const StoryGrid = () => {
               </audio>
             )}
 
-            {/* Video */}
             {["mp4", "webm", "ogg"].includes(fileExtension) && (
               <video controls className="w-full h-40 object-cover">
                 <source src={mediaUrl} type={`video/${fileExtension}`} />
@@ -58,18 +55,16 @@ const StoryGrid = () => {
               </video>
             )}
 
-            {/* Fallback if file type is unknown */}
             {!["jpg", "jpeg", "png", "gif", "mp3", "wav", "mp4", "webm", "ogg"].includes(
               fileExtension
             ) && <p className="p-4 text-sm text-gray-500">Unsupported media type</p>}
 
+            {/* Text Content */}
             <div className="p-4">
               <h3 className="font-semibold text-lg">{story.title}</h3>
-              <p className="text-sm text-gray-600 mt-1 line-clamp-5">
-                {story.snippet}
-              </p>
+              <p className="text-sm text-gray-600 mt-1 line-clamp-5">{story.snippet}</p>
               <Link
-                to="/"
+                to={`/story/${story._id}`}
                 className="inline-block text-blue-600 mt-2 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300"
               >
                 Read More →

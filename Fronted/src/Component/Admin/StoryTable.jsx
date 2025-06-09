@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteStory, fetchStories } from "../../Features/storySlice";
 
-
 const StoryTable = () => {
   const API_BASE = import.meta.env.VITE_API_URL;
   const dispatch = useDispatch();
@@ -20,8 +19,11 @@ const StoryTable = () => {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this story?")) {
       await dispatch(deleteStory(id));
-      dispatch(fetchStories()); // Reload stories after delete
-      setPage(1); // Reset to first page
+      // Reset page if current page becomes empty after delete
+      if ((page - 1) * perPage >= stories.length - 1) {
+        setPage((prev) => Math.max(prev - 1, 1));
+      }
+      dispatch(fetchStories());
     }
   };
 
@@ -64,7 +66,7 @@ const StoryTable = () => {
                       />
                     ) : (
                       <a
-                        href={`http://localhost:3000/uploads/${s.filename}`}
+                        href={`${API_BASE}/uploads/${s.filename}`}
                         target="_blank"
                         rel="noreferrer"
                         className="text-blue-600 underline"

@@ -9,13 +9,11 @@ export const submitStory = createAsyncThunk(
     try {
       const res = await fetch(`${API_BASE}/api/story`, {
         method: "POST",
-        body: formData, // no need for Content-Type when using FormData
+        body: formData,
       });
-
-      if (!res.ok) throw new Error("Network response was not ok");
-
+      if (!res.ok) throw new Error("Upload failed");
       const result = await res.json();
-      return result;
+      return result.media; // Assuming API returns { media }
     } catch (error) {
       return rejectWithValue(error.message || "Something went wrong");
     }
@@ -45,7 +43,7 @@ export const deleteStory = createAsyncThunk(
         method: "DELETE",
       });
       if (!res.ok) throw new Error("Failed to delete story");
-      return id; // Return ID to remove from state
+      return id;
     } catch (error) {
       return rejectWithValue(error.message || "Delete failed");
     }
@@ -58,6 +56,8 @@ const storySlice = createSlice({
   initialState: {
     stories: [],
     loading: false,
+    submitting: false,
+    deleting: false,
     error: null,
   },
   reducers: {},
@@ -65,15 +65,15 @@ const storySlice = createSlice({
     builder
       // Submit story
       .addCase(submitStory.pending, (state) => {
-        state.loading = true;
+        state.submitting = true;
         state.error = null;
       })
       .addCase(submitStory.fulfilled, (state, action) => {
-        state.loading = false;
+        state.submitting = false;
         state.stories.push(action.payload);
       })
       .addCase(submitStory.rejected, (state, action) => {
-        state.loading = false;
+        state.submitting = false;
         state.error = action.payload;
       })
 
@@ -84,20 +84,26 @@ const storySlice = createSlice({
       })
       .addCase(fetchStories.fulfilled, (state, action) => {
         state.loading = false;
-        state.stories = action.payload;
+        state.stories = Array.isArray(action.payload) ? action.payload : [];
       })
       .addCase(fetchStories.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
-      // ✅ Handle delete story
+      // Delete story
+      .addCase(deleteStory.pending, (state) => {
+        state.deleting = true;
+        state.error = null;
+      })
       .addCase(deleteStory.fulfilled, (state, action) => {
+        state.deleting = false;
         state.stories = state.stories.filter(
           (story) => story._id !== action.payload
         );
       })
       .addCase(deleteStory.rejected, (state, action) => {
+        state.deleting = false;
         state.error = action.payload;
       });
   },
