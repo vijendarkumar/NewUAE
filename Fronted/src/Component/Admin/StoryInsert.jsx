@@ -6,7 +6,7 @@ import { submitStory } from "../../Features/storySlice";
 
 const StoryInsert = () => {
   const dispatch = useDispatch();
-  const { loading, error, success } = useSelector((state) => state.stories);
+  const { loading, error, success } = useSelector((state) => state.story);
   const fileInputRef = useRef(null);
   const [formData, setFormData] = useState({
     title: "",

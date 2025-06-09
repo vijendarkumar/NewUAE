@@ -4,10 +4,10 @@ import { Link } from "react-router-dom";
 import { fetchStories } from "../../../Features/storySlice";
 
 const StoryGrid = () => {
+   const API_BASE = import.meta.env.VITE_API_URL;
   const dispatch = useDispatch();
   const { stories, loading, error } = useSelector((state) => state.story);
   const [visibleCount, setVisibleCount] = useState(6);
-  const API_BASE = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     dispatch(fetchStories());

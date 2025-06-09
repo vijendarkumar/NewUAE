@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 // API base URL
-const API_BASE = import.meta.env.VITE_API_URL
+const API_BASE = import.meta.env.VITE_API_URL;
 
 // Async thunk to get raffle status
 export const fetchRaffleStatus = createAsyncThunk(

@@ -5,7 +5,7 @@ import { deleteStory, fetchStories } from "../../Features/storySlice";
 const StoryTable = () => {
   const API_BASE = import.meta.env.VITE_API_URL;
   const dispatch = useDispatch();
-  const { stories, loading, error } = useSelector((state) => state.stories);
+  const { stories, loading, error } = useSelector((state) => state.story);
   const [page, setPage] = useState(1);
   const perPage = 10;
 
