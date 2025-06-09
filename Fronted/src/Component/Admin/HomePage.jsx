@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { userstoryshow } from "../../Features/UserSlice";
+import { fetchUsers } from "../../Features/UserSlice";
+
 
 const HomePage = () => {
   const dispatch = useDispatch();
-  const { stories, loading, error } = useSelector((state) => state.stories); // ✅ Make sure "story" is the correct key from your store
-  const { users } = useSelector((state) => state.app);
-  const { tickets } = useSelector((state) => state.raffle);
+  const { users, loading, error } = useSelector((state) => state.app);
+  const { stories =[] } = useSelector((state) => state.stories); 
+  const { tickets=[] } = useSelector((state) => state.raffle);
   const [page, setPage] = useState(1);
   const perPage = 10;
 
-  const paged = stories?.slice((page - 1) * perPage, page * perPage); // ✅ Optional chaining to avoid crash if stories is undefined
+  const paged = users?.slice((page - 1) * perPage, page * perPage); // ✅ Optional chaining to avoid crash if stories is undefined
 
   useEffect(() => {
-    dispatch(userstoryshow());
+    dispatch(fetchUsers());
   }, [dispatch]);
 
   return (

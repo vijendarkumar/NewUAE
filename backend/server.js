@@ -9,16 +9,18 @@ const cors = require("cors");
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // CORS options
-const corsoption = {
-  origin: process.env.FRONTEND_URL,
-  methods: ["GET", "POST", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-};
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL_LOCAL || process.env.FRONTEND_URL_PROD,
+    methods: ["GET", "POST", "DELETE"],
+    credentials: true,
+  })
+);
 
 // Middlewares
 const bodyparser = require("body-parser");
 app.use(bodyparser.json());
-app.use(cors(corsoption));
+app.use(cors()); // allows all origins — OK for local dev
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

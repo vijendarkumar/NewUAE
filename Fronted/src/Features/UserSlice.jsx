@@ -1,9 +1,10 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
-const API_BASE = import.meta.env.VITE_API_URL
-// Thunk for submitting user data
-export const userdata = createAsyncThunk(
-  "user/userdata",
+const API_BASE = import.meta.env.VITE_API_URL;
+
+// Submit a new user
+export const submitUser = createAsyncThunk(
+  "user/submitUser",
   async (data, { rejectWithValue }) => {
     try {
       const res = await fetch(`${API_BASE}/api/user`, {
@@ -12,26 +13,33 @@ export const userdata = createAsyncThunk(
         body: JSON.stringify(data),
       });
 
-      if (!res.ok) throw new Error("Network response was not ok");
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "User submission failed");
+      }
 
-      const result = await res.json();
-      return result;
+      return await res.json();
     } catch (error) {
-      return rejectWithValue(error.message || "Something went wrong");
+      return rejectWithValue(error.message);
     }
   }
 );
 
-// Thunk for fetching user stories
-export const userstoryshow = createAsyncThunk(
-  "user/userstoryshow",
+// Fetch all submitted users
+export const fetchUsers = createAsyncThunk(
+  "user/fetchUsers",
   async (_, { rejectWithValue }) => {
     try {
       const res = await fetch(`${API_BASE}/api/user`);
-      if (!res.ok) throw new Error("Failed to fetch stories");
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Failed to fetch users");
+      }
+
       return await res.json();
     } catch (error) {
-      return rejectWithValue(error.message || "Failed to load stories");
+      return rejectWithValue(error.message);
     }
   }
 );
@@ -41,39 +49,35 @@ const userSlice = createSlice({
   name: "user",
   initialState: {
     users: [],
-    stories: [], // ✅ added this
     loading: false,
     error: null,
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // Handle user submission
-      .addCase(userdata.pending, (state) => {
+      .addCase(submitUser.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(userdata.fulfilled, (state, action) => {
+      .addCase(submitUser.fulfilled, (state, action) => {
         state.loading = false;
         state.users.push(action.payload);
       })
-      .addCase(userdata.rejected, (state, action) => {
+      .addCase(submitUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
-
-      // Handle user stories
-      .addCase(userstoryshow.pending, (state) => {
+      .addCase(fetchUsers.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(userstoryshow.fulfilled, (state, action) => {
+      .addCase(fetchUsers.fulfilled, (state, action) => {
         state.loading = false;
-        state.stories = action.payload;
+        state.users = action.payload;
       })
-      .addCase(userstoryshow.rejected, (state, action) => {
+      .addCase(fetchUsers.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || "Failed to load stories";
+        state.error = action.payload;
       });
   },
 });

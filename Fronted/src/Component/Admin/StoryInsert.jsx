@@ -6,8 +6,9 @@ import { submitStory } from "../../Features/storySlice";
 
 const StoryInsert = () => {
   const dispatch = useDispatch();
-  const { loading, error, success } = useSelector((state) => state.story);
+  const { loading, error, success } = useSelector((state) => state.stories);
   const fileInputRef = useRef(null);
+
   const [formData, setFormData] = useState({
     title: "",
     snippet: "",
@@ -40,25 +41,24 @@ const StoryInsert = () => {
     const data = new FormData();
     data.append("title", formData.title);
     data.append("snippet", formData.snippet);
-    data.append("media", formData.file); // <-- must be "media"
+    data.append("media", formData.file); // backend expects "media"
     data.append("type", formData.type);
 
     dispatch(submitStory(data));
   };
 
-  // Reset form on success
   useEffect(() => {
     if (success) {
-       Swal.fire({
-            title: "Thank You",
-            icon: "success",
-            confirmButtonText: "OK",
-            draggable: true,
-          }).then(() => {
-            // This runs after OK is clicked
-            window.location.href = "story-insert"; // Redirect or reload
-          });
-      dispatch(resetState());
+      Swal.fire({
+        title: "Thank You",
+        text: "Your story has been submitted successfully!",
+        icon: "success",
+        confirmButtonText: "OK",
+      }).then(() => {
+        window.location.reload(); // reload page after user confirms
+      });
+
+      dispatch(resetState()); // ✅ reset success state for future submissions
     }
   }, [success, dispatch]);
 

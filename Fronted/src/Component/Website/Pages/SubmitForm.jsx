@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import Swal from "sweetalert2";
 import { useDispatch } from "react-redux";
-import { userdata } from "../../../Features/UserSlice";
 import RaffleWidget from "./RaffleWidget";
+import { submitUser } from "../../../Features/UserSlice";
 const SubmitForm = () => {
 
   const [formData, setFormData] = useState({
@@ -38,7 +38,7 @@ const SubmitForm = () => {
       return;
     }
     try {
-      await dispatch(userdata(formData)).unwrap(); // waits and throws on error
+      await dispatch(submitUser(formData)).unwrap(); // waits and throws on error
       Swal.fire({
         title: "Thank You",
         icon: "success",
