@@ -11,7 +11,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // CORS options
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL_LOCAL || process.env.FRONTEND_URL_PROD,
+    origin: process.env.FRONTEND_URL,
     methods: ["GET", "POST", "DELETE"],
     credentials: true,
   })
