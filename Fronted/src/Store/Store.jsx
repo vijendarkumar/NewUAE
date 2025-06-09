@@ -8,7 +8,7 @@ const store = configureStore({
   reducer: {
     app: userReducer,      // useSelector((state) => state.app)
     raffle: raffleReducer, // useSelector((state) => state.raffle)
-    stories: storyReducer, // useSelector((state) => state.stories)
+    story: storyReducer, // useSelector((state) => state.stories)
   },
 });
 
